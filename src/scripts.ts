@@ -6,6 +6,7 @@ const countryInput = document.querySelector<HTMLInputElement>('.country-name');
 const columnContainer = document.querySelector<HTMLElement>('js-column-container');
 const searchButton = document.querySelector<HTMLButtonElement>('.search-button');
 const formContainer = document.querySelector<HTMLFormElement>('.js-form-container');
+const globalTable = document.querySelector<HTMLTableElement>('.js-global-table');
 
 //create type for each country
 type Country = {
@@ -88,28 +89,72 @@ const loadCountryDB = (paramKey: keyof Country, activeInput: HTMLInputElement) =
 
             });
             console.log('Filtered country', filteredCountries);
-    
-            //clear field all td elements text
-            const firstRowTds = document.querySelectorAll('.row-one td');
-            console.log('firstRowTds', firstRowTds);
-            firstRowTds.forEach((td) => {
-                td.textContent = '';
-            });
 
-            activeInput.value = '';
+            const updateData = filteredCountries.forEach((country, index) => {
+                updateTable(country, index + 1);
+            });
             
-            if (countryElement) {
-                if (filteredCountries.length > 0) {
-                    const firstCountry = filteredCountries[0];
-                    console.log('firstCountry', firstCountry);
-                    firstRowTds[0].textContent = firstCountry.name;
-                    firstRowTds[1].textContent = firstCountry.capital;
-                    firstRowTds[2].textContent = firstCountry.currency.name;
-                    firstRowTds[3].textContent = firstCountry.language.name;
-                }
-            }
+            // need to dinamicly create rows and insert filtered data
+            // //clear field all td elements text
+            // const firstRowTds = document.querySelectorAll('.row-one td');
+            // console.log('firstRowTds', firstRowTds);
+            // firstRowTds.forEach((td) => {
+            //     td.textContent = '';
+            // });
+
+            // activeInput.value = '';
+            
+            
+            // if (countryElement) {
+            //     if (filteredCountries.length > 0) {
+            //         const firstCountry = filteredCountries[0];
+            //         console.log('firstCountry', firstCountry);
+            //         firstRowTds[0].textContent = firstCountry.name;
+            //         firstRowTds[1].textContent = firstCountry.capital;
+            //         firstRowTds[2].textContent = firstCountry.currency.name;
+            //         firstRowTds[3].textContent = firstCountry.language.name;
+            //     }
+            // }
         }).catch((error) => {
         console.error('Error loading database:', error);
     });
 };
 
+
+function updateTable(country: Country, rowIndex: number) {
+
+    // <tr> element defines a row of cells in a table
+    const row = document.createElement('tr');
+
+    //create row numeration element
+    const th = document.createElement('th');
+    th.textContent = rowIndex.toString();
+    row.appendChild(th);
+    
+    //create a cell for each country property
+    const properties = ['name', 'capital', 'currency.name', 'language.name'];
+    properties.forEach((property) => {
+        const ceil = document.createElement('td');
+        //passing whole object country to the function
+        ceil.textContent = getProperty(country, property);
+        row.appendChild(ceil);
+    });
+
+    //add cell to table
+    globalTable.appendChild(row);    
+}
+
+//funсtion to get values from Country (such as currency and language)
+function getProperty(obj: any, properties: string): string {
+    const propChain = properties.split('.');
+    let value = obj;
+
+    propChain.forEach((property) => {
+        //assign whole object country (aka value) to the property chain element (only single property per loop)
+        value = value[property];
+    });
+
+    //return property text
+    return value;
+}
+ 
