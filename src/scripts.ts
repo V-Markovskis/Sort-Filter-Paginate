@@ -186,7 +186,7 @@ const columns = document.querySelectorAll<HTMLTableElement>('.js-col');
         console.log(dataKey);
 
         if (dataKey) {
-            const url = `http://localhost:3004/countries?_sort=${dataKey}&_order=asc`;
+            const url = `http://localhost:3004/countries?_sort=${dataKey}&_order=asc&_limit=${indexOffset}`;
 
             sortTable(url);
         }
@@ -208,20 +208,22 @@ const columns = document.querySelectorAll<HTMLTableElement>('.js-col');
     
     tbodyTableElement.innerHTML = '';
 
-
-    indexOffset = 1;
-    data.forEach((item) => {
+    data.forEach((item, index) => {
+        //table row
         const newRow = document.createElement('tr');
 
+        //create row numeration element
+        const th = document.createElement('th');
+        th.textContent = indexOffset.toString();
+        newRow.appendChild(th);
+
         newRow.innerHTML = `
-            <td>${indexOffset}</td>
+            <td>${index + 1}</td>
             <td>${item.name}</td>
             <td>${item.capital}</td>
             <td>${item.currency.name}</td>
             <td>${item.language.name}</td>
             `;
         tbodyTableElement.appendChild(newRow);
-        indexOffset += 1;
     });
-
  }
