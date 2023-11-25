@@ -31,6 +31,7 @@ type Country = {
 
 
 searchButton.addEventListener('click', () => {
+    tbodyTableElement.innerHTML = '';
     const inputs = formContainer.querySelectorAll<HTMLInputElement>('input');
     const activeInput = Array.from(inputs).find((input) => input.value.trim() !== '');
 
@@ -92,31 +93,12 @@ const loadCountryDB = (paramKey: keyof Country, activeInput: HTMLInputElement) =
                 updateTable(country, index + 1);
             });
             
-            if (activeInput.value.trim() === '') {
-                // clearTableOnServer();
-            }
+            activeInput.value = '';
 
-            // TODO : 1) Clear if only text in input deleted
         }).catch((error) => {
         console.error('Error loading database:', error);
     });
 };
-
-
-// function clearTableOnServer() {
-//     // Отправляем запрос DELETE на сервер
-//     axios.delete('http://localhost:3004/countries')
-//         .then(() => {
-//             // Обработка успешного удаления
-//             console.log('Table cleared on the server');
-//             // Теперь обновите таблицу, например, загрузите данные снова
-//             // displayCountries();
-//         })
-//         .catch((error) => {
-//             // Обработка ошибок
-//             console.error('Error clearing table on the server:', error);
-//         });
-// }
 
 
 function updateTable(country: Country, rowIndex: number) {
@@ -159,31 +141,6 @@ function getProperty(obj: any, properties: string): string {
 
 
 
-// firstRowTds.forEach((td) => {
-            //     td.textContent = '';
-            // });
-            
-            // need to dinamicly create rows and insert filtered data
-            // //clear field all td elements text
-            // const firstRowTds = document.querySelectorAll('.row-one td');
-            // console.log('firstRowTds', firstRowTds);
-            // firstRowTds.forEach((td) => {
-            //     td.textContent = '';
-            // });
-
-            
-            
-            
-            // if (countryElement) {
-            //     if (filteredCountries.length > 0) {
-            //         const firstCountry = filteredCountries[0];
-            //         console.log('firstCountry', firstCountry);
-            //         firstRowTds[0].textContent = firstCountry.name;
-            //         firstRowTds[1].textContent = firstCountry.capital;
-            //         firstRowTds[2].textContent = firstCountry.currency.name;
-            //         firstRowTds[3].textContent = firstCountry.language.name;
-            //     }
-            // }
 
 
-            //axios.get('http://localhost:3004/countries?_limit=20') CHECK!!!!
+//axios.get('http://localhost:3004/countries?_limit=20') CHECK!!!!
