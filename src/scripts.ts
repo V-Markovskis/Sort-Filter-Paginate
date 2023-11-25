@@ -6,6 +6,7 @@ const searchButton = document.querySelector<HTMLButtonElement>('.search-button')
 const formContainer = document.querySelector<HTMLFormElement>('.js-form-container');
 const tbodyTableElement = document.querySelector<HTMLTableElement>('.js-table-body');
 const loadMoreButton = document.querySelector<HTMLButtonElement>('.load-more');
+const globalTable = document.querySelector<HTMLTableElement>('.js-global-table');
 
 let isFiltered = false; //check if filter applied to countries
 
@@ -173,4 +174,54 @@ function getProperty(obj: any, properties: string): string {
     //return property text
     return value;
 }
- 
+
+//SORT LOGIC JSON
+
+const columns = document.querySelectorAll<HTMLTableElement>('.js-col');
+
+ columns.forEach((column) => {
+    column.addEventListener('click', () => {
+        console.log('Column clicked:', column);
+        const dataKey = column.getAttribute('data-key');
+        console.log(dataKey);
+
+        if (dataKey) {
+            const url = `http://localhost:3004/countries?_sort=${dataKey}&_order=asc`;
+
+            sortTable(url);
+        }
+    });
+ });
+
+ function sortTable(url: string) {
+    axios.get(url)
+        .then((response) => {
+            // (response.data) this is the body, which contains the actual data returned by the server
+            renderTable(response.data);
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+ }
+
+ function renderTable(data: Country[]) {
+    
+    tbodyTableElement.innerHTML = '';
+
+
+    indexOffset = 1;
+    data.forEach((item) => {
+        const newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td>${indexOffset}</td>
+            <td>${item.name}</td>
+            <td>${item.capital}</td>
+            <td>${item.currency.name}</td>
+            <td>${item.language.name}</td>
+            `;
+        tbodyTableElement.appendChild(newRow);
+        indexOffset += 1;
+    });
+
+ }
