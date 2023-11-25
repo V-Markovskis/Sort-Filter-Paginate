@@ -8,7 +8,7 @@ const tbodyTableElement = document.querySelector<HTMLTableElement>('.js-table-bo
 const loadMoreButton = document.querySelector<HTMLButtonElement>('.load-more');
 const globalTable = document.querySelector<HTMLTableElement>('.js-global-table');
 
-let isFiltered = false; //check if filter applied to countries
+// let isFiltered = false; //check if filter applied to countries
 
 //create type for each country
 type Country = {
@@ -51,10 +51,10 @@ function loadTwentyCountries() {
 }
 
 loadMoreButton.addEventListener('click', () => {
-    if (isFiltered) {
-        tbodyTableElement.innerHTML = '';
-        isFiltered = false;
-    }
+    // if (isFiltered) {
+    //     tbodyTableElement.innerHTML = '';
+    //     isFiltered = false;
+    // }
     loadTwentyCountries();
 });
 
@@ -98,7 +98,8 @@ searchButton.addEventListener('click', () => {
 });
 
 const loadCountryDB = (paramKey: keyof Country, activeInput: HTMLInputElement) => {
-    isFiltered = true;
+    // isFiltered = true;
+    // tbodyTableElement.innerHTML = '';
     const result = axios.get<Country[]>('http://localhost:3004/countries');
     let db: { countries: Country[] };
 
@@ -125,12 +126,14 @@ const loadCountryDB = (paramKey: keyof Country, activeInput: HTMLInputElement) =
             });
             console.log('Filtered country', filteredCountries);
 
-            tbodyTableElement.innerHTML = '';
+            // tbodyTableElement.innerHTML = '';
 
             filteredCountries.forEach((country, index) => {
-                updateTable(country, indexOffset + index + 1);
+                updateTable(country, index + 1);
             });
-            
+
+            indexOffset += filteredCountries.length;
+
             activeInput.value = '';
 
         }).catch((error) => {
@@ -209,12 +212,13 @@ const columns = document.querySelectorAll<HTMLTableElement>('.js-col');
     tbodyTableElement.innerHTML = '';
 
     data.forEach((item, index) => {
+        const rowIndex = index + 1;
         //table row
         const newRow = document.createElement('tr');
 
         //create row numeration element
         const th = document.createElement('th');
-        th.textContent = indexOffset.toString();
+        th.textContent = rowIndex.toString();
         newRow.appendChild(th);
 
         newRow.innerHTML = `
