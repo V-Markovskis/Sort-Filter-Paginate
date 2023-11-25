@@ -29,36 +29,55 @@ type Country = {
     isoCode: string;
 };
 
+loadFirstTwentyCountries();
+
+function loadFirstTwentyCountries() {
+    axios.get('http://localhost:3004/countries?_limit=20')
+        .then(({ data }) => {
+            data.forEach((country: Country, index: number) => {
+                updateTable(country, index + 1);
+            });
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+        });
+    }
+
 
 searchButton.addEventListener('click', () => {
     tbodyTableElement.innerHTML = '';
     const inputs = formContainer.querySelectorAll<HTMLInputElement>('input');
     const activeInput = Array.from(inputs).find((input) => input.value.trim() !== '');
 
-    let category: keyof Country | undefined;
+    if (activeInput) {
+        let category: keyof Country | undefined;
 
-    const inputName = activeInput.getAttribute('name');
+        const inputName = activeInput.getAttribute('name');
 
-    switch (inputName) {
-        case 'country-name':
-            category = 'name';
-            break;
-        case 'capital-name':
-            category = 'capital';
-            break;
-        case 'currency-name':
-            category = 'currency';
-            break;
-        case 'language-name':
-            category = 'language';
-            break;
-        default:
-            console.log('switch case error');
-            break;
-    }
+        switch (inputName) {
+            case 'country-name':
+                category = 'name';
+                break;
+            case 'capital-name':
+                category = 'capital';
+                break;
+            case 'currency-name':
+                category = 'currency';
+                break;
+            case 'language-name':
+                category = 'language';
+                break;
+            default:
+                console.log('switch case error');
+                break;
+        }
 
-    if (category) {
-        loadCountryDB(category, activeInput);
+        if (category) {
+            loadCountryDB(category, activeInput);
+        }
+    } else {
+        console.log('Loading first twenty countries');
+        loadFirstTwentyCountries();
     }
 });
 
