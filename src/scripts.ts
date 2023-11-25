@@ -8,6 +8,7 @@ const searchButton = document.querySelector<HTMLButtonElement>('.search-button')
 const formContainer = document.querySelector<HTMLFormElement>('.js-form-container');
 const globalTable = document.querySelector<HTMLTableElement>('.js-global-table');
 const tbodyTableElement = document.querySelector<HTMLTableElement>('.js-table-body');
+const loadMoreButton = document.querySelector<HTMLButtonElement>('.load-more');
 
 //create type for each country
 type Country = {
@@ -29,19 +30,28 @@ type Country = {
     isoCode: string;
 };
 
-loadFirstTwentyCountries();
+let indexOffset = 0;
+loadTwentyCountries();
 
-function loadFirstTwentyCountries() {
-    axios.get('http://localhost:3004/countries?_limit=20')
+
+function loadTwentyCountries() { 
+    axios.get(`http://localhost:3004/countries?_start=${indexOffset}&_limit=20`)
         .then(({ data }) => {
             data.forEach((country: Country, index: number) => {
-                updateTable(country, index + 1);
+                updateTable(country, indexOffset + index + 1);
             });
+            indexOffset += 20;
+            console.log(indexOffset);
         })
         .catch((error) => {
             console.error('Error fetching data:', error);
         });
-    }
+        
+
+    loadMoreButton.addEventListener('click', () => {
+        loadTwentyCountries();
+    });
+}
 
 
 searchButton.addEventListener('click', () => {
@@ -77,7 +87,7 @@ searchButton.addEventListener('click', () => {
         }
     } else {
         console.log('Loading first twenty countries');
-        loadFirstTwentyCountries();
+        loadTwentyCountries();
     }
 });
 
