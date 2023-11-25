@@ -2,13 +2,12 @@ import axios from 'axios';
 import $ from 'jquery';
 
 //get elements part here
-const countryInput = document.querySelector<HTMLInputElement>('.country-name');
-const columnContainer = document.querySelector<HTMLElement>('js-column-container');
 const searchButton = document.querySelector<HTMLButtonElement>('.search-button');
 const formContainer = document.querySelector<HTMLFormElement>('.js-form-container');
-const globalTable = document.querySelector<HTMLTableElement>('.js-global-table');
 const tbodyTableElement = document.querySelector<HTMLTableElement>('.js-table-body');
 const loadMoreButton = document.querySelector<HTMLButtonElement>('.load-more');
+
+let isFiltered = false; //check if filter applied to countries
 
 //create type for each country
 type Country = {
@@ -37,24 +36,30 @@ loadTwentyCountries();
 function loadTwentyCountries() { 
     axios.get(`http://localhost:3004/countries?_start=${indexOffset}&_limit=20`)
         .then(({ data }) => {
+            // tbodyTableElement.innerHTML = '';
             data.forEach((country: Country, index: number) => {
                 updateTable(country, indexOffset + index + 1);
+                console.log('index after inserting 20 countries', indexOffset);
             });
             indexOffset += 20;
-            console.log(indexOffset);
+            console.log('increment index plus 20', indexOffset);
         })
         .catch((error) => {
             console.error('Error fetching data:', error);
-        });
-        
-
-    loadMoreButton.addEventListener('click', () => {
-        loadTwentyCountries();
-    });
+        });      
 }
+
+loadMoreButton.addEventListener('click', () => {
+    if (isFiltered) {
+        tbodyTableElement.innerHTML = '';
+        isFiltered = false;
+    }
+    loadTwentyCountries();
+});
 
 
 searchButton.addEventListener('click', () => {
+    indexOffset = 0;
     tbodyTableElement.innerHTML = '';
     const inputs = formContainer.querySelectorAll<HTMLInputElement>('input');
     const activeInput = Array.from(inputs).find((input) => input.value.trim() !== '');
@@ -92,6 +97,7 @@ searchButton.addEventListener('click', () => {
 });
 
 const loadCountryDB = (paramKey: keyof Country, activeInput: HTMLInputElement) => {
+    isFiltered = true;
     const result = axios.get<Country[]>('http://localhost:3004/countries');
     let db: { countries: Country[] };
 
@@ -118,8 +124,10 @@ const loadCountryDB = (paramKey: keyof Country, activeInput: HTMLInputElement) =
             });
             console.log('Filtered country', filteredCountries);
 
+            tbodyTableElement.innerHTML = '';
+
             filteredCountries.forEach((country, index) => {
-                updateTable(country, index + 1);
+                updateTable(country, indexOffset + index + 1);
             });
             
             activeInput.value = '';
@@ -166,10 +174,3 @@ function getProperty(obj: any, properties: string): string {
     return value;
 }
  
-
-
-
-
-
-
-//axios.get('http://localhost:3004/countries?_limit=20') CHECK!!!!
